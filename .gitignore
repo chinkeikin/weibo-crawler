@@ -376,3 +376,8 @@ $RECYCLE.BIN/
 
 js.json
 user_id_list.txt
+
+# 运行时配置文件（不提交，避免冲突）
+config.json.bak
+*.db
+*.db-journal
