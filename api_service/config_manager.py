@@ -156,5 +156,28 @@ class ConfigManager:
 
 
 # 全局配置管理器实例
-config_manager = ConfigManager()
+# 延迟初始化，避免模块导入时路径问题
+_config_manager_instance = None
+
+def _init_config_manager():
+    """初始化配置管理器（延迟初始化）"""
+    global _config_manager_instance
+    if _config_manager_instance is None:
+        import os
+        # 尝试从环境变量获取路径，否则使用默认路径
+        config_path = os.getenv("CONFIG_PATH", "config.json")
+        _config_manager_instance = ConfigManager(config_path)
+    return _config_manager_instance
+
+# 创建一个延迟初始化的代理类
+class _ConfigManagerProxy:
+    """配置管理器代理，延迟初始化"""
+    def __getattr__(self, name):
+        return getattr(_init_config_manager(), name)
+    
+    def __call__(self, *args, **kwargs):
+        return _init_config_manager()
+
+# 全局实例（延迟初始化）
+config_manager = _ConfigManagerProxy()
 
